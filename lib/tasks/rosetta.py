@@ -19,6 +19,8 @@ redis_client = StrictRedis(
     db=config["redis"]["databases"]["main"]
 )
 
+channels = dict()
+
 
 @task
 def bot():
@@ -58,8 +60,11 @@ def autoping(slack_client, last_ping):
 
 
 def process_message_event(slack_client, bot_info, event):
-    channel = slack_client.server.channels.find(event.get("channel"))
-    print(channel)
+    if event.get("channel") in channels:
+        channel = channels[event.get("channel")]
+    else:
+        channel = slack_client.server.channels.find(event.get("channel"))
+        channels[event.get("channel")] = channel
 
     is_private_message = True if len(channel.members) == 0 else False
     message = event.get("text")

@@ -43,7 +43,6 @@ class CommandRunnerWAMPComponent(ApplicationSession):
             command = self.redis_client.rpop("rosetta:commands:queue")
 
             if command is None:
-                time.sleep(0.1)
                 continue
 
             try:
