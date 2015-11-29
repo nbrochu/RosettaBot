@@ -1,6 +1,7 @@
 .idea
 
 config/config.yaml
+config/commands.custom.yaml
 
 __pycache__/
 *.py[cod]
