@@ -1,0 +1,13 @@
+ipython[all]==4.0.0
+
+PyYAML==3.11
+
+invoke==0.11.1
+
+autobahn==0.10.9
+
+requests==2.8.1
+websocket-client==0.34.0
+slackclient==0.16
+
+redis==2.10.5

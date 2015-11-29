@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+import subprocess
+
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler, FileModifiedEvent
+
+process = None
+
+class ChangeHandler(FileSystemEventHandler):
+    def on_modified(self, event):
+        if type(event) is FileModifiedEvent and event.src_path.endswith("___jb_bak___") is False and "__pycache__" not in event.src_path:
+            print("Change detected! (%s) - Restarting process..." % event.src_path)
+
+            global process
+
+            process.kill()
+            process = subprocess.Popen("bin/default_commands_component")
+
+
+if __name__ == "__main__":
+    event_handler = ChangeHandler()
+
+    observer = Observer()
+
+    observer.schedule(event_handler, "lib", recursive=True)
+    observer.schedule(event_handler, "config", recursive=False)
+
+    observer.start()
+
+    try:
+        process = subprocess.Popen("bin/default_commands_component")
+    except KeyboardInterrupt:
+        observer.stop()
+
+    observer.join()

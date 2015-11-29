@@ -1,0 +1,11 @@
+hello:
+    endpoint: "rosetta.hello"
+    description: Greets the user
+    usage: "@$BOTNAME$ hello"
+    forward_user: true
+
+echo:
+    endpoint: "rosetta.echo"
+    description: Repeats the user's message
+    usage: "@$BOTNAME$ echo _message_"
+    forward_user: false
