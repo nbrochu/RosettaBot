@@ -2,6 +2,7 @@
 
 config/config.yaml
 config/commands.custom.yaml
+config/reactions.yaml
 
 __pycache__/
 *.py[cod]

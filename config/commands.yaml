@@ -9,3 +9,9 @@ echo:
     description: Repeats the user's message
     usage: "@$BOTNAME$ echo _message_"
     forward_user: false
+
+slap:
+    endpoint: "rosetta.slap"
+    description: Slaps the specified user
+    usage: "@$BOTNAME$ slap _@user_"
+    forward_user: true

@@ -1,5 +1,6 @@
 from lib.config import config
 from lib.commands import commands
+from lib.reactions import reactions
 
 import invoke
 from invoke import task
@@ -31,6 +32,8 @@ def bot():
         bot_info = json.loads(slack_client.api_call("auth.test").decode("utf-8"))
         last_ping = 0
 
+        cache_emoji_list(slack_client)
+
         while True:
             last_ping = autoping(slack_client, last_ping)
 
@@ -48,7 +51,20 @@ def bot():
         sys.exit(0)
 
 
-# Autoping
+def cache_emoji_list(slack_client):
+    emojis = slack_client.api_call(
+        "emoji.list"
+    )
+
+    emoji_list = []
+    emoji_data = json.loads(emojis.decode("utf-8")).get("emoji")
+
+    for emoji, url in emoji_data.items():
+        emoji_list.append(emoji)
+
+    redis_client.lpush("slack:emojis", emoji_list)
+
+
 def autoping(slack_client, last_ping):
     now = int(time.time())
 
@@ -67,7 +83,17 @@ def process_message_event(slack_client, bot_info, event):
         channels[event.get("channel")] = channel
 
     is_private_message = True if len(channel.members) == 0 else False
-    message = event.get("text")
+    message = event.get("text") or ""
+
+    # Automatic Reactions
+    for pattern, emoji in reactions.items():
+        if pattern in message.lower():
+            slack_client.api_call(
+                "reactions.add",
+                name=emoji,
+                channel=event.get("channel"),
+                timestamp=event.get("ts")
+            )
 
     if is_private_message is False:
         if message.startswith("<@%s> " % bot_info.get("user_id")) or message.startswith("%s " % bot_info.get("user")):
@@ -144,7 +170,6 @@ def process_queued_responses(slack_client):
             slack_client.api_call(
                 "chat.postMessage",
                 as_user=True,
-                parse="full",
                 **response
             )
 

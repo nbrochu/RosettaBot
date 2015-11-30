@@ -13,3 +13,9 @@ redis:
     port: 6379
     databases:
         main: 0
+
+# Command configurations
+
+slap:
+    - $SOURCEUSER$ slaps $TARGETUSER$ around with a large trout.
+    - $SOURCEUSER$ slaps $TARGETUSER$ around with a large :$EMOJI$:.
